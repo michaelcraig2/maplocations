@@ -11,7 +11,7 @@ st.set_page_config(layout="wide")
 st.title("📍 Interactive Map Generator with Geocoding & Clustering Toggle")
 st.write("Upload an Excel file with columns: **Company Name** (A) and **Full Address (created)** (F).")
 
-API_KEY = "YOUR_GOOGLE_MAPS_API_KEY"
+API_KEY = "AIzaSyDyr9TM2ovLL8ncZWywcZYwnAHkVHm7-Lk"
 GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 
 def get_lat_lng(address):
@@ -73,7 +73,7 @@ def generate_map(df, use_clusters):
             fg.add_to(m)
         folium.LayerControl().add_to(m)
 
-    legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: white; border:2px solid grey; z-index:9999; font-size:14px; padding:10px;">'
+    legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: white; border:2px solid grey; z-index:9999; font-size:14px; color:#000000; padding:10px;">'
     legend_html += '<b style="color:#0000FF;">Company Legend</b><br>'
     for company, color in color_map.items():
         legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i>{company}<br>'
@@ -126,20 +126,13 @@ if uploaded_file:
         )
 
 if "map" in st.session_state:
-    st_folium(st.session_state["map"], width=1000, height=600)
+    st_folium(st.session_state["map"], width=1700, height=900)
 
-st.write("### ✅ Deployment Instructions")
+st.write("### ✅ Important Information")
 st.code("""
-1. Save this script as app.py
-2. Create requirements.txt with:
-   streamlit
-   pandas
-   folium
-   streamlit-folium
-   openpyxl
-   requests
-3. Replace YOUR_GOOGLE_MAPS_API_KEY with your actual key
-4. Push to GitHub
-5. Deploy on https://streamlit.io/cloud
+Notes:  
+   - You can turn on/off clustering of locations with the check box above the map
+   - You can use the layer button in the top right area of the map to turn on/off different company locations
+   - You can download your original excel file with latitude and longitude now added
 """)
 
