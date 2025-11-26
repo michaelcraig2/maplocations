@@ -37,7 +37,7 @@ def generate_map(df):
             popup=popup_info
         ).add_to(marker_cluster)
 
-    legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: black; border:2px solid black; z-index:9999; font-size:14px; color:#000000; padding:10px;">'
+    legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: white; border:2px solid black; z-index:9999; font-size:14px; color:#000000; padding:10px;">'
     legend_html += '<b>Company Legend</b><br>'
     for company, color in color_map.items():
         legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i>{company}<br>'
@@ -71,6 +71,7 @@ if uploaded_file:
         filtered_df = df[df['Company Name'] == selected_company]
         st.write(f"Showing {len(filtered_df)} locations for **{selected_company}**")
         st.dataframe(filtered_df[['Company Name', 'Full Address (created)', 'latitude', 'longitude']])
+
 
 
 
