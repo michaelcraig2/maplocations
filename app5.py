@@ -9,7 +9,7 @@ from io import BytesIO
 
 st.set_page_config(layout="wide")
 st.title("📍 Interactive Map Generator with Geocoding & Clustering Toggle")
-st.write("Upload an Excel file with columns: **Company Name** (A) and **Full Address** (F).")
+st.write("Upload an Excel file with columns: **Company Name** and **Full Address**.")
 
 API_KEY = "AIzaSyDyr9TM2ovLL8ncZWywcZYwnAHkVHm7-Lk"
 GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
