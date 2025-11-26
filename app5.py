@@ -5,6 +5,7 @@ import folium
 from streamlit_folium import st_folium
 import requests
 import random
+from io import BytesIO
 
 st.set_page_config(layout="wide")
 st.title("📍 Interactive Map Generator with Geocoding & Clustering Toggle")
@@ -15,13 +16,16 @@ API_KEY = "YOUR_GOOGLE_MAPS_API_KEY"
 GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 
 def get_lat_lng(address):
-    params = {'address': address, 'key': API_KEY}
-    response = requests.get(GEOCODE_URL, params=params)
-    if response.status_code == 200:
-        data = response.json()
-        if data['status'] == 'OK':
-            location = data['results'][0]['geometry']['location']
-            return location['lat'], location['lng']
+    try:
+        params = {'address': address, 'key': API_KEY}
+        response = requests.get(GEOCODE_URL, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            if data['status'] == 'OK':
+                location = data['results'][0]['geometry']['location']
+                return location['lat'], location['lng']
+    except Exception:
+        return None, None
     return None, None
 
 @st.cache_data
@@ -34,8 +38,8 @@ def generate_map(df, use_clusters):
     colors = [vibrant_colors[i % len(vibrant_colors)] for i in range(len(companies))]
     color_map = dict(zip(companies, colors))
 
-    center_lat = df['latitude'].mean()
-    center_lon = df['longitude'].mean()
+    center_lat = df['latitude'].dropna().mean() if not df['latitude'].dropna().empty else 39.8283
+    center_lon = df['longitude'].dropna().mean() if not df['longitude'].dropna().empty else -98.5795
     m = folium.Map(location=[center_lat, center_lon], zoom_start=5)
 
     if use_clusters:
@@ -68,7 +72,7 @@ def generate_map(df, use_clusters):
             fg.add_to(m)
         folium.LayerControl().add_to(m)
 
-    legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: white; border:2px solid grey; z-index:9999; font-size:14px; color:#000000; padding:10px;">'
+    legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: white; border:2px solid grey; z-index:9999; font-size:14px; padding:10px;">'
     legend_html += '<b style="color:#0000FF;">Company Legend</b><br>'
     for company, color in color_map.items():
         legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i>{company}<br>'
@@ -93,16 +97,45 @@ if uploaded_file:
             df['longitude'] = None
 
         st.write("Geocoding addresses... This may take a few minutes.")
+        progress_bar = st.progress(0)
+        total_rows = len(df)
+
         for idx, row in df.iterrows():
             if pd.isna(row['latitude']) or pd.isna(row['longitude']):
                 lat, lng = get_lat_lng(row['Full Address (created)'])
                 if lat and lng:
                     df.at[idx, 'latitude'] = lat
                     df.at[idx, 'longitude'] = lng
+            progress_bar.progress((idx + 1) / total_rows)
 
         st.success("Geocoding complete! Generating map...")
         st.session_state["map"] = generate_map(df, use_clusters)
 
+        # Download updated Excel file
+        output = BytesIO()
+        df.to_excel(output, index=False)
+        st.download_button(
+            label="Download Updated Excel",
+            data=output.getvalue(),
+            file_name="updated_locations.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
 if "map" in st.session_state:
-    st_folium(st.session_state["map"], width=1700, height=900)
+    st_folium(st.session_state["map"], width=1000, height=600)
+
+st.write("### ✅ Deployment Instructions")
+st.code("""
+1. Save this script as app.py
+2. Create requirements.txt with:
+   streamlit
+   pandas
+   folium
+   streamlit-folium
+   openpyxl
+   requests
+3. Replace YOUR_GOOGLE_MAPS_API_KEY with your actual key
+4. Push to GitHub
+5. Deploy on https://streamlit.io/cloud
+""")
 
