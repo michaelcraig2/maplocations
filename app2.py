@@ -60,8 +60,8 @@ if uploaded_file:
         df = df.dropna(subset=['latitude', 'longitude'])
         st.session_state["map"] = generate_map(df)
 
-#if "map" in st.session_state:
-#    st_folium(st.session_state["map"], width=1000, height=600)
+if "map" in st.session_state:
+    st_folium(st.session_state["map"], width=1700, height=900)
 
 # Search/filter feature
 if uploaded_file:
@@ -71,6 +71,7 @@ if uploaded_file:
         filtered_df = df[df['Company Name'] == selected_company]
         st.write(f"Showing {len(filtered_df)} locations for **{selected_company}**")
         st.dataframe(filtered_df[['Company Name', 'Full Address (created)', 'latitude', 'longitude']])
+
 
 
 
