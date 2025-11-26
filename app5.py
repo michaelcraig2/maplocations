@@ -9,7 +9,7 @@ from io import BytesIO
 
 st.set_page_config(layout="wide")
 st.title("📍 Interactive Map Generator with Geocoding & Clustering Toggle")
-st.write("Upload an Excel file with columns: **Company Name** (A) and **Full Address (created)** (F).")
+st.write("Upload an Excel file with columns: **Company Name** (A) and **Address** (F).")
 
 API_KEY = "AIzaSyDyr9TM2ovLL8ncZWywcZYwnAHkVHm7-Lk"
 GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
@@ -47,7 +47,7 @@ def generate_map(df, use_clusters):
         from folium.plugins import MarkerCluster
         marker_cluster = MarkerCluster().add_to(m)
         for _, row in valid_rows.iterrows():
-            popup_info = f"<b>{row['Company Name']}</b><br>{row['Full Address (created)']}"
+            popup_info = f"<b>{row['Company Name']}</b><br>{row['Address']}"
             folium.CircleMarker(
                 location=[row['latitude'], row['longitude']],
                 radius=6,
@@ -61,7 +61,7 @@ def generate_map(df, use_clusters):
             fg = folium.FeatureGroup(name=company)
             company_data = valid_rows[valid_rows['Company Name'] == company]
             for _, row in company_data.iterrows():
-                popup_info = f"<b>{company}</b><br>{row['Full Address (created)']}"
+                popup_info = f"<b>{company}</b><br>{row['Address']}"
                 folium.CircleMarker(
                     location=[row['latitude'], row['longitude']],
                     radius=6,
@@ -87,7 +87,7 @@ use_clusters = st.checkbox("Enable Marker Clustering", value=False)
 
 if uploaded_file:
     df = pd.read_excel(uploaded_file, engine='openpyxl')
-    required_cols = ['Company Name', 'Full Address (created)']
+    required_cols = ['Company Name', 'Address']
 
     if not all(col in df.columns for col in required_cols):
         st.error(f"Excel file must contain columns: {required_cols}")
@@ -103,7 +103,7 @@ if uploaded_file:
 
         for idx, row in df.iterrows():
             if pd.isna(row['latitude']) or pd.isna(row['longitude']):
-                lat, lng = get_lat_lng(row['Full Address (created)'])
+                lat, lng = get_lat_lng(row['Address'])
                 if lat and lng:
                     df.at[idx, 'latitude'] = lat
                     df.at[idx, 'longitude'] = lng
