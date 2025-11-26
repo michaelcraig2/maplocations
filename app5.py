@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 import folium
@@ -6,11 +7,11 @@ import requests
 import random
 
 st.set_page_config(layout="wide")
-st.title("📍 Interactive Map Generator with Geocoding")
+st.title("📍 Interactive Map Generator with Geocoding & Clustering Toggle")
 st.write("Upload an Excel file with columns: **Company Name** (A) and **Full Address (created)** (F).")
 
 # Google Maps API Key
-API_KEY = "AIzaSyDyr9TM2ovLL8ncZWywcZYwnAHkVHm7-Lk"
+API_KEY = "YOUR_GOOGLE_MAPS_API_KEY"
 GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 
 def get_lat_lng(address):
@@ -24,7 +25,7 @@ def get_lat_lng(address):
     return None, None
 
 @st.cache_data
-def generate_map(df):
+def generate_map(df, use_clusters):
     companies = df['Company Name'].unique()
     vibrant_colors = [
         "#FF0000", "#00FF00", "#0000FF", "#FFA500", "#800080",
@@ -37,22 +38,35 @@ def generate_map(df):
     center_lon = df['longitude'].mean()
     m = folium.Map(location=[center_lat, center_lon], zoom_start=5)
 
-    for company in companies:
-        fg = folium.FeatureGroup(name=company)
-        company_data = df[df['Company Name'] == company]
-        for _, row in company_data.iterrows():
-            popup_info = f"<b>{company}</b><br>{row['Full Address (created)']}"
+    if use_clusters:
+        from folium.plugins import MarkerCluster
+        marker_cluster = MarkerCluster().add_to(m)
+        for _, row in df.iterrows():
+            popup_info = f"<b>{row['Company Name']}</b><br>{row['Full Address (created)']}"
             folium.CircleMarker(
                 location=[row['latitude'], row['longitude']],
                 radius=6,
-                color=color_map[company],
+                color=color_map[row['Company Name']],
                 fill=True,
-                fill_color=color_map[company],
+                fill_color=color_map[row['Company Name']],
                 popup=popup_info
-            ).add_to(fg)
-        fg.add_to(m)
-
-    folium.LayerControl().add_to(m)
+            ).add_to(marker_cluster)
+    else:
+        for company in companies:
+            fg = folium.FeatureGroup(name=company)
+            company_data = df[df['Company Name'] == company]
+            for _, row in company_data.iterrows():
+                popup_info = f"<b>{company}</b><br>{row['Full Address (created)']}"
+                folium.CircleMarker(
+                    location=[row['latitude'], row['longitude']],
+                    radius=6,
+                    color=color_map[company],
+                    fill=True,
+                    fill_color=color_map[company],
+                    popup=popup_info
+                ).add_to(fg)
+            fg.add_to(m)
+        folium.LayerControl().add_to(m)
 
     legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: white; border:2px solid grey; z-index:9999; font-size:14px; color:#000000; padding:10px;">'
     legend_html += '<b style="color:#0000FF;">Company Legend</b><br>'
@@ -61,10 +75,10 @@ def generate_map(df):
     legend_html += '</div>'
     m.get_root().html.add_child(folium.Element(legend_html))
 
-   
     return m
 
 uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx"])
+use_clusters = st.checkbox("Enable Marker Clustering", value=False)
 
 if uploaded_file:
     df = pd.read_excel(uploaded_file, engine='openpyxl')
@@ -87,7 +101,8 @@ if uploaded_file:
                     df.at[idx, 'longitude'] = lng
 
         st.success("Geocoding complete! Generating map...")
-        st.session_state["map"] = generate_map(df)
+        st.session_state["map"] = generate_map(df, use_clusters)
 
 if "map" in st.session_state:
     st_folium(st.session_state["map"], width=1700, height=900)
+
