@@ -37,22 +37,14 @@ def generate_map(df):
             popup=popup_info
         ).add_to(marker_cluster)
 
-   # legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: white; border:2px solid black; z-index:9999; font-size:14px; color:#FF0000; padding:10px;">'
-   # legend_html += '<b>Company Legend</b><br>'
-   # for company, color in color_map.items():
-   #     legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i>{company}<br>'
-   # legend_html += '</div>'
-   # m.get_root().html.add_child(folium.Element(legend_html))
+    legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: black; border:2px solid black; z-index:9999; font-size:14px; color:#FF0000; padding:10px;">'
+    legend_html += '<b>Company Legend</b><br>'
+    for company, color in color_map.items():
+        legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i>{company}<br>'
+    legend_html += '</div>'
+    m.get_root().html.add_child(folium.Element(legend_html))
 
-legend_html = '''
-<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; 
-background-color: white; border:2px solid grey; z-index:9999; font-size:14px; 
-padding:10px; color:#333333;"> <!-- Change #333333 to any color -->
-<b style="color:#0000FF;">Company Legend</b><br> <!-- Title in blue -->
-'''
-for company, color in color_map.items():
-    legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i><span style="color:#FF0000;">{company}</span><br>'
-legend_html += '</div>'
+
 
     return m
 
@@ -93,6 +85,7 @@ st.code("""
 3. Push to GitHub
 4. Go to https://streamlit.io/cloud and deploy your app
 """)
+
 
 
 
