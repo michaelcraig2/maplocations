@@ -55,13 +55,29 @@ def generate_map(df):
 
     folium.LayerControl().add_to(m)
 
-    legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: white; border:2px solid grey; z-index:9999; font-size:14px; padding:10px;">'
+    legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: white; border:2px solid grey; z-index:9999; font-size:14px; color:#000000; padding:10px;">'
     legend_html += '<b style="color:#0000FF;">Company Legend</b><br>'
     for company, color in color_map.items():
         legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i>{company}<br>'
     legend_html += '</div>'
     m.get_root().html.add_child(folium.Element(legend_html))
 
+
+ # Add legend for color reference
+    legend_html = '''
+    <div style="position: fixed; bottom: 50px; left: 50px; width: 250px; 
+    background-color: white; border:2px solid grey; z-index:9999; font-size:14px; 
+    padding:10px; color:#333333;">
+    <b style="color:#0000FF;">Company Legend</b><br>
+    '''
+    for company, color in color_map.items():
+        legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i><span style="color:#000000;">{company}</span><br>'
+    legend_html += '</div>'
+    m.get_root().html.add_child(folium.Element(legend_html))
+
+
+
+    
     return m
 
 uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx"])
