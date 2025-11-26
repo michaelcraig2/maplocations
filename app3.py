@@ -51,7 +51,7 @@ def generate_map(df):
     <b style="color:#0000FF;">Company Legend</b><br>
     '''
     for company, color in color_map.items():
-        legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i><span style="color:#FF0000;">{company}</span><br>'
+        legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i><span style="color:#000000;">{company}</span><br>'
     legend_html += '</div>'
     m.get_root().html.add_child(folium.Element(legend_html))
 
@@ -70,7 +70,7 @@ if uploaded_file:
         st.session_state["map"] = generate_map(df)
 
 if "map" in st.session_state:
-    st_folium(st.session_state["map"], width=1000, height=600)
+    st_folium(st.session_state["map"], width=1700, height=900)
 
 # Search/filter feature
 if uploaded_file:
@@ -81,16 +81,4 @@ if uploaded_file:
         st.write(f"Showing {len(filtered_df)} locations for **{selected_company}**")
         st.dataframe(filtered_df[['Company Name', 'Full Address (created)', 'latitude', 'longitude']])
 
-# Deployment instructions
-st.write("### ✅ Deployment Instructions")
-st.code("""
-1. Save this script as app.py
-2. Create requirements.txt with:
-   streamlit
-   pandas
-   folium
-   streamlit-folium
-   openpyxl
-3. Push to GitHub
-4. Go to https://streamlit.io/cloud and deploy your app
-""")
+
