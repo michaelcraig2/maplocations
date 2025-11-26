@@ -37,7 +37,7 @@ def generate_map(df):
             popup=popup_info
         ).add_to(marker_cluster)
 
-    legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: black; border:2px solid black; z-index:9999; font-size:14px; color:#FF0000; padding:10px;">'
+    legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: black; border:2px solid black; z-index:9999; font-size:14px; color:#000000; padding:10px;">'
     legend_html += '<b>Company Legend</b><br>'
     for company, color in color_map.items():
         legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i>{company}<br>'
@@ -60,8 +60,8 @@ if uploaded_file:
         df = df.dropna(subset=['latitude', 'longitude'])
         st.session_state["map"] = generate_map(df)
 
-if "map" in st.session_state:
-    st_folium(st.session_state["map"], width=1000, height=600)
+#if "map" in st.session_state:
+#    st_folium(st.session_state["map"], width=1000, height=600)
 
 # Search/filter feature
 if uploaded_file:
@@ -72,19 +72,8 @@ if uploaded_file:
         st.write(f"Showing {len(filtered_df)} locations for **{selected_company}**")
         st.dataframe(filtered_df[['Company Name', 'Full Address (created)', 'latitude', 'longitude']])
 
-# Deployment instructions
-st.write("### ✅ Deployment Instructions")
-st.code("""
-1. Save this script as app.py
-2. Create requirements.txt with:
-   streamlit
-   pandas
-   folium
-   streamlit-folium
-   openpyxl
-3. Push to GitHub
-4. Go to https://streamlit.io/cloud and deploy your app
-""")
+
+
 
 
 
