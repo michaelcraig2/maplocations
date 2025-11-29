@@ -127,17 +127,19 @@ if uploaded_file:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
+        
+        # Generate HTML content as string
+        html_content = m.get_root().render()
+        
         # Download map as HTML
-        output_html = BytesIO()
-        m.save(output_html)
-        output_html.seek(0)  # Reset pointer
         st.download_button(
             label="Download Map as HTML",
-            data=output_html.getvalue(),
+            data=html_content,
             file_name="interactive_map.html",
             mime="text/html"
         )
 
+       
 if "map" in st.session_state:
     st_folium(st.session_state["map"], width=1700, height=900)
 
