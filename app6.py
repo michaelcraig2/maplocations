@@ -130,6 +130,7 @@ if uploaded_file:
         # Download map as HTML
         output_html = BytesIO()
         m.save(output_html)
+        output_html.seek(0)  # Reset pointer
         st.download_button(
             label="Download Map as HTML",
             data=output_html.getvalue(),
