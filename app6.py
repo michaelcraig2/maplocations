@@ -73,7 +73,7 @@ def generate_map(df, use_clusters):
             fg.add_to(m)
         folium.LayerControl().add_to(m)
 
-    legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: white; border:2px solid grey; z-index:9999; font-size:14px; padding:10px;">'
+    legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: white; border:2px solid grey; z-index:9999; color:#000000; font-size:14px; padding:10px;">'
     legend_html += '<b style="color:#0000FF;">Company Legend</b><br>'
     for company, color in color_map.items():
         legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i>{company}<br>'
@@ -143,17 +143,4 @@ if uploaded_file:
 if "map" in st.session_state:
     st_folium(st.session_state["map"], width=1700, height=900)
 
-st.write("### ✅ Deployment Instructions")
-st.code("""
-1. Save this script as app.py
-2. Create requirements.txt with:
-   streamlit
-   pandas
-   folium
-   streamlit-folium
-   openpyxl
-   requests
-3. Replace YOUR_GOOGLE_MAPS_API_KEY with your actual key
-4. Push to GitHub
-5. Deploy on https://streamlit.io/cloud
-""")
+
