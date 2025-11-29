@@ -143,4 +143,13 @@ if uploaded_file:
 if "map" in st.session_state:
     st_folium(st.session_state["map"], width=1700, height=900)
 
+st.write("### ✅ Important Information")
+st.code("""
+Notes:  
+   - You can turn on/off clustering of locations with the check box above the map
+   - You can use the layer button in the top right area of the map to turn on/off different company locations
+   - You can download your original excel file with latitude and longitude now added
+   - You can download the HTML of your map and share it
+""")
+
 
