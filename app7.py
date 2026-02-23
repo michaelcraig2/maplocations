@@ -1,31 +1,3 @@
-import streamlit as st
-import pandas as pd
-import folium
-from streamlit_folium import st_folium
-import requests
-import random
-from io import BytesIO
-
-st.set_page_config(layout="wide")
-st.title("📍 Interactive Map Generator with Geocoding & Clustering Toggle")
-st.write("Upload an Excel file with columns: **Company Name** and **Full Address**.")
-
-API_KEY = "AIzaSyDyr9TM2ovLL8ncZWywcZYwnAHkVHm7-Lk"
-GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
-
-def get_lat_lng(address):
-    try:
-        params = {'address': address, 'key': API_KEY}
-        response = requests.get(GEOCODE_URL, params=params)
-        if response.status_code == 200:
-            data = response.json()
-            if data['status'] == 'OK':
-                location = data['results'][0]['geometry']['location']
-                return location['lat'], location['lng']
-    except Exception:
-        return None, None
-    return None, None
-
 @st.cache_data
 def generate_map(df, use_clusters: bool, show_legend: bool):
     companies = df['Company Name'].unique()
@@ -50,7 +22,7 @@ def generate_map(df, use_clusters: bool, show_legend: bool):
             folium.CircleMarker(
                 location=[row['latitude'], row['longitude']],
                 radius=6,
-                color=color_map[row['Company Name']]],
+                color=color_map[row['Company Name']],
                 fill=True,
                 fill_color=color_map[row['Company Name']],
                 popup=popup_info
@@ -72,7 +44,6 @@ def generate_map(df, use_clusters: bool, show_legend: bool):
             fg.add_to(m)
         folium.LayerControl().add_to(m)
 
-    # ✅ Only add legend if show_legend is True
     if show_legend:
         legend_html = (
             '&lt;div style="position: fixed; bottom: 50px; left: 50px; width: 250px; '
@@ -89,77 +60,3 @@ def generate_map(df, use_clusters: bool, show_legend: bool):
         m.get_root().html.add_child(folium.Element(legend_html))
 
     return m
-
-uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx"])
-use_clusters = st.checkbox("Enable Marker Clustering", value=False)
-
-# ✅ New checkbox to toggle legend on/off
-show_legend = st.checkbox("Show Company Legend", value=True)
-
-if uploaded_file:
-    df = pd.read_excel(uploaded_file, engine='openpyxl')
-    required_cols = ['Company Name', 'Full Address']
-
-    if not all(col in df.columns for col in required_cols):
-        st.error(f"Excel file must contain columns: {required_cols}")
-    else:
-        if 'latitude' not in df.columns:
-            df['latitude'] = None
-        if 'longitude' not in df.columns:
-            df['longitude'] = None
-
-        st.write("Geocoding addresses... This may take a few minutes.")
-        progress_bar = st.progress(0)
-        total_rows = len(df)
-
-        for idx, row in df.iterrows():
-            if pd.isna(row['latitude']) or pd.isna(row['longitude']):
-                lat, lng = get_lat_lng(row['Full Address'])
-                if lat and lng:
-                    df.at[idx, 'latitude'] = lat
-                    df.at[idx, 'longitude'] = lng
-            progress_bar.progress((idx + 1) / total_rows)
-
-        missing_count = df[['latitude', 'longitude']].isna().any(axis=1).sum()
-        if missing_count > 0:
-            st.warning(f"{missing_count} addresses could not be geocoded and will not appear on the map.")
-
-        st.success("Geocoding complete! Generating map...")
-        # Pass the new toggle into the map generator
-        m = generate_map(df, use_clusters, show_legend)
-        st.session_state["map"] = m
-
-        # Download updated Excel file
-        output_excel = BytesIO()
-        df.to_excel(output_excel, index=False)
-        st.download_button(
-            label="Download Updated Excel",
-            data=output_excel.getvalue(),
-            file_name="updated_locations.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-
-        # Generate HTML content as string
-        html_content = m.get_root().render()
-
-        # Download map as HTML
-        st.download_button(
-            label="Download Map as HTML",
-            data=html_content,
-            file_name="interactive_map.html",
-            mime="text/html"
-        )
-
-if "map" in st.session_state:
-    st_folium(st.session_state["map"], width=1700, height=900)
-
-st.write("### ✅ Important Information")
-st.code("""
-Notes:  
-   - You can turn on/off clustering of locations with the check box above the map
-   - You can show/hide the company legend with the 'Show Company Legend' check box
-   - You can use the layer button in the top right area of the map to turn on/off different company locations
-   - You can download your original excel file with latitude and longitude now added
-   - You can download the HTML of your map and share it
-""")
-``
