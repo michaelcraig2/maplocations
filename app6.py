@@ -72,7 +72,7 @@ def generate_map(df, use_clusters):
                 ).add_to(fg)
             fg.add_to(m)
         folium.LayerControl().add_to(m)
-    if use_clusters:
+    if show_legend:
          legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: white; border:2px solid grey; z-index:9999; color:#000000; font-size:14px; padding:10px;">'
          legend_html += '<b style="color:#0000FF;">Company Legend</b><br>'
          for company, color in color_map.items():
