@@ -51,7 +51,7 @@ def get_lat_lng(address):
     return None, None
 
 @st.cache_data
-def generate_map(df, use_clusters):
+def generate_map(df, use_clusters, show_legend):
     companies = df['Company Name'].unique()
     vibrant_colors = [
         "#FF0000", "#00FF00", "#0000FF", "#FFA500", "#800080",
@@ -141,7 +141,7 @@ if uploaded_file:
             st.warning(f"{missing_count} addresses could not be geocoded and will not appear on the map.")
 
         st.success("Geocoding complete! Generating map...")
-        m = generate_map(df, use_clusters)
+        m = generate_map(df, use_clusters, show_legend)
         st.session_state["map"] = m
 
         # Download updated Excel file
