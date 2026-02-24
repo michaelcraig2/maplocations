@@ -72,7 +72,7 @@ def generate_map(df, use_clusters, show_legend):
                 color=color,
                 fill=True,
                 fill_color=color,
-                fill_opacity=0.9,
+                #fill_opacity=0.9,
                 popup=popup_info
             ).add_to(marker_cluster)
     else:
