@@ -89,9 +89,9 @@ def generate_map(df, use_clusters, show_legend):
                     location=[row['latitude'], row['longitude']],
                     radius=6,
                     color=color,
-                    fill=False,
+                    fill=true,
                     #fill_color=color,
-                    #fill_opacity=0.9,
+                    fill_opacity=0.5,
                     popup=popup_info
                 ).add_to(fg)
             fg.add_to(m)
