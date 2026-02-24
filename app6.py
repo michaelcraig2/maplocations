@@ -14,28 +14,8 @@ st.write("Upload an Excel file with columns: **Company Name** and **Full Address
 API_KEY = "AIzaSyDyr9TM2ovLL8ncZWywcZYwnAHkVHm7-Lk"
 GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 
-def remove_legend(m):
-    """
-    Remove the custom Folium legend <div> injected via folium.Element().
-    Assumes the legend contains the text 'Company Legend'.
-    """
 
-    # Folium stores custom HTML elements here:
-    html_children = m.get_root().html._children
 
-    # Search through the children to find matching legend
-    keys_to_delete = []
-
-    for key, child in html_children.items():
-        rendered = child.render()  # Convert child to HTML string
-        if "Company Legend" in rendered:
-            keys_to_delete.append(key)
-
-    # Remove matching children
-    for key in keys_to_delete:
-        del html_children[key]
-
-    return m  # Return the map for convenience
     
 def get_lat_lng(address):
     try:
@@ -104,15 +84,13 @@ def generate_map(df, use_clusters, show_legend):
         legend_html += '</div>'
         m.get_root().html.add_child(folium.Element(legend_html))
     else:
-        st.write("Reached the else statement")
-        remove_legend(m)
-
+        st.write("IF YOU ALREADY CREATED A MAP WITH A LEGEND, YOU'LL NEED TO RELOAD THE ENTIRE PAGE TO REMOVE THE LEGEND")
 
     return m
 
 uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx"])
 use_clusters = st.checkbox("Enable Marker Clustering", value=False)
-show_legend = st.checkbox("Show Company Legend", value=False)
+show_legend = st.checkbox("Show Company Legend", value=True)
 
 if uploaded_file:
     df = pd.read_excel(uploaded_file, engine='openpyxl')
