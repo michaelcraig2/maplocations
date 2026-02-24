@@ -14,6 +14,29 @@ st.write("Upload an Excel file with columns: **Company Name** and **Full Address
 API_KEY = "AIzaSyDyr9TM2ovLL8ncZWywcZYwnAHkVHm7-Lk"
 GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 
+def remove_legend(m):
+    """
+    Remove the custom Folium legend <div> injected via folium.Element().
+    Assumes the legend contains the text 'Company Legend'.
+    """
+
+    # Folium stores custom HTML elements here:
+    html_children = m.get_root().html._children
+
+    # Search through the children to find matching legend
+    keys_to_delete = []
+
+    for key, child in html_children.items():
+        rendered = child.render()  # Convert child to HTML string
+        if "Company Legend" in rendered:
+            keys_to_delete.append(key)
+
+    # Remove matching children
+    for key in keys_to_delete:
+        del html_children[key]
+
+    return m  # Return the map for convenience
+    
 def get_lat_lng(address):
     try:
         params = {'address': address, 'key': API_KEY}
@@ -80,9 +103,7 @@ def generate_map(df, use_clusters):
          legend_html += '</div>'
          m.get_root().html.add_child(folium.Element(legend_html))
     else:
-        for key, child in list(m.get_root().html._children.items()):
-            if "Company Legend" in str(child.render()):
-                del m.get_root().html._children[key]
+        remove_legend(m)
 
 
     return m
