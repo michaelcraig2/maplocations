@@ -72,13 +72,15 @@ def generate_map(df, use_clusters):
                 ).add_to(fg)
             fg.add_to(m)
         folium.LayerControl().add_to(m)
-
-    # legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: white; border:2px solid grey; z-index:9999; color:#000000; font-size:14px; padding:10px;">'
-    # legend_html += '<b style="color:#0000FF;">Company Legend</b><br>'
-    # for company, color in color_map.items():
-    #    legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i>{company}<br>'
-    # legend_html += '</div>'
-    # m.get_root().html.add_child(folium.Element(legend_html))
+    if use_clusters:
+         legend_html = '<div style="position: fixed; bottom: 50px; left: 50px; width: 250px; background-color: white; border:2px solid grey; z-index:9999; color:#000000; font-size:14px; padding:10px;">'
+         legend_html += '<b style="color:#0000FF;">Company Legend</b><br>'
+         for company, color in color_map.items():
+             legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i>{company}<br>'
+         legend_html += '</div>'
+         m.get_root().html.add_child(folium.Element(legend_html))
+    else:
+        
 
     return m
 
