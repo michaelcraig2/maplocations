@@ -79,7 +79,11 @@ def generate_map(df, use_clusters):
              legend_html += f'<i style="background:{color};width:15px;height:15px;float:left;margin-right:8px;"></i>{company}<br>'
          legend_html += '</div>'
          m.get_root().html.add_child(folium.Element(legend_html))
-         
+    else:
+        for key, child in list(m.get_root().html._children.items()):
+            if "Company Legend" in str(child.render()):
+                del m.get_root().html._children[key]
+
 
     return m
 
