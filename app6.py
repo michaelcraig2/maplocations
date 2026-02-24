@@ -84,6 +84,7 @@ def generate_map(df, use_clusters):
 
 uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx"])
 use_clusters = st.checkbox("Enable Marker Clustering", value=False)
+show_legend = st.checkbox("Show Company Legend", value=True)
 
 if uploaded_file:
     df = pd.read_excel(uploaded_file, engine='openpyxl')
