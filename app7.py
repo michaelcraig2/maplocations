@@ -64,8 +64,15 @@ def generate_map(df, use_clusters, show_legend):
         for _, row in valid_rows.iterrows():
             Status = row.get('Status', 'Unknown')
             color = Status_colors.get(Status, default_color)
+            
+        popup_info = (
+            f"<div style='font-size:10pt;'>"
+            f"<b>{row['Company Name']}</b><br>"
+            f"<a href='{row['CRM Link']}' target='_blank'>CRM Link</a>"
+            f"</div>"
+        )
 
-            popup_info = f"<b>{row['Company Name']}</b><br>{row['Full Address']}<br>Status: {Status}"
+           # popup_info = f"<b>{row['Company Name']}</b><br>{row['CRM Link']}"
             folium.CircleMarker(
                 location=[row['latitude'], row['longitude']],
                 radius=6,
@@ -83,8 +90,15 @@ def generate_map(df, use_clusters, show_legend):
             for _, row in company_data.iterrows():
                 Status = row.get('Status', 'Unknown')
                 color = Status_colors.get(Status, default_color)
+                
+                popup_info = (
+                    f"<div style='font-size:10pt;'>"
+                    f"<b>{row['Company Name']}</b><br>"
+                    f"<a href='{row['CRM Link']}' target='_blank'>CRM Link</a>"
+                    f"</div>"
+                )
 
-                popup_info = f"<b>{company}"
+                #popup_info = f"<b>{company}"
                 folium.CircleMarker(
                     location=[row['latitude'], row['longitude']],
                     radius=6,
