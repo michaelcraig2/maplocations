@@ -91,13 +91,26 @@ def generate_map(df, use_clusters, show_legend):
                 Status = row.get('Status', 'Unknown')
                 color = Status_colors.get(Status, default_color)
                 
+                #popup_info = (
+                #    f"<div style='font-size:10pt;'>"
+                #    f"<b>{row['Company Name']}</b><br>"
+                #    f"<a href='{row['CRM Link']}' target='_blank'>CRM Link</a>"
+                #    f"</div>"
+                #)
+
+                from urllib.parse import quote_plus
+                
+                address = row['Full Address']  # e.g., "123 Main St, Minneapolis, MN 55401"
+                gmaps_url = f"https://www.google.com/maps/search/?api=1&query={quote_plus(address)}"
+                
                 popup_info = (
                     f"<div style='font-size:10pt;'>"
                     f"<b>{row['Company Name']}</b><br>"
-                    f"<a href='{row['CRM Link']}' target='_blank'>CRM Link</a>"
+                    f"<a href='{row['CRM Link']}' target='_blank' rel='noopener'>CRM Link</a><br>"
+                    f"<a href='{gmaps_url}' target='_blank' rel='noopener'>{address}</a>"
                     f"</div>"
                 )
-
+                
                 #popup_info = f"<b>{company}"
                 folium.CircleMarker(
                     location=[row['latitude'], row['longitude']],
