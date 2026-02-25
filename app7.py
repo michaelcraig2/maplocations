@@ -91,7 +91,7 @@ def generate_map(df, use_clusters, show_legend):
                     color=color,
                     fill=True,
                     fill_color=color,
-                    fill_opacity=0.5,
+                    fill_opacity=0.2,
                     popup=popup_info
                 ).add_to(fg)
             fg.add_to(m)
