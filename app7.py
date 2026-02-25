@@ -84,7 +84,7 @@ def generate_map(df, use_clusters, show_legend):
                 Status = row.get('Status', 'Unknown')
                 color = Status_colors.get(Status, default_color)
 
-                popup_info = f"<b>{company}</b><br>{row['Full Address']}<br>Status: {Status}"
+                popup_info = f"<b>{company}"
                 folium.CircleMarker(
                     location=[row['latitude'], row['longitude']],
                     radius=6,
