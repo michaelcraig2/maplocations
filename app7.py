@@ -34,19 +34,19 @@ def generate_map(df, use_clusters, show_legend):
     # Keep company list for layer groups (unchanged behavior)
     companies = df['Company Name'].unique()
 
-    # --- NEW: build colors per Phase (not per Company) ---
-    # Gather phases present in this file; put 'Unknown' last for a cleaner legend
-    phases = sorted([p for p in df['Phase'].dropna().unique() if p != 'Unknown'])
-    if 'Unknown' in df['Phase'].values:
-        phases.append('Unknown')
+    # --- NEW: build colors per Status (not per Company) ---
+    # Gather Statuss present in this file; put 'Unknown' last for a cleaner legend
+    Statuss = sorted([p for p in df['Status'].dropna().unique() if p != 'Unknown'])
+    if 'Unknown' in df['Status'].values:
+        Statuss.append('Unknown')
 
-    # Color palette (enough distinct colors; will cycle if there are many phases)
+    # Color palette (enough distinct colors; will cycle if there are many Statuss)
     vibrant_colors = [
         "#FF0000", "#00A65A", "#1F77B4", "#FFA500", "#800080",
         "#008080", "#FF1493", "#FFD700", "#00CED1", "#DC143C",
         "#17BECF", "#9467BD", "#2CA02C", "#E377C2", "#7F7F7F"
     ]
-    phase_colors = {phase: vibrant_colors[i % len(vibrant_colors)] for i, phase in enumerate(phases)}
+    Status_colors = {Status: vibrant_colors[i % len(vibrant_colors)] for i, Status in enumerate(Statuss)}
     default_color = "#7F7F7F"
 
     # Map center (unchanged)
@@ -58,14 +58,14 @@ def generate_map(df, use_clusters, show_legend):
     valid_rows = df.dropna(subset=['latitude', 'longitude'])
 
     if use_clusters:
-        # --- Cluster mode: same behavior, now colored by Phase ---
+        # --- Cluster mode: same behavior, now colored by Status ---
         from folium.plugins import MarkerCluster
         marker_cluster = MarkerCluster().add_to(m)
         for _, row in valid_rows.iterrows():
-            phase = row.get('Phase', 'Unknown')
-            color = phase_colors.get(phase, default_color)
+            Status = row.get('Status', 'Unknown')
+            color = Status_colors.get(Status, default_color)
 
-            popup_info = f"<b>{row['Company Name']}</b><br>{row['Full Address']}<br>Phase: {phase}"
+            popup_info = f"<b>{row['Company Name']}</b><br>{row['Full Address']}<br>Status: {Status}"
             folium.CircleMarker(
                 location=[row['latitude'], row['longitude']],
                 radius=6,
@@ -76,15 +76,15 @@ def generate_map(df, use_clusters, show_legend):
                 popup=popup_info
             ).add_to(marker_cluster)
     else:
-        # --- Non-cluster mode: keep per-company FeatureGroups (unchanged), colored by Phase ---
+        # --- Non-cluster mode: keep per-company FeatureGroups (unchanged), colored by Status ---
         for company in companies:
             fg = folium.FeatureGroup(name=company)
             company_data = valid_rows[valid_rows['Company Name'] == company]
             for _, row in company_data.iterrows():
-                phase = row.get('Phase', 'Unknown')
-                color = phase_colors.get(phase, default_color)
+                Status = row.get('Status', 'Unknown')
+                color = Status_colors.get(Status, default_color)
 
-                popup_info = f"<b>{company}</b><br>{row['Full Address']}<br>Phase: {phase}"
+                popup_info = f"<b>{company}</b><br>{row['Full Address']}<br>Status: {Status}"
                 folium.CircleMarker(
                     location=[row['latitude'], row['longitude']],
                     radius=6,
@@ -97,17 +97,17 @@ def generate_map(df, use_clusters, show_legend):
             fg.add_to(m)
         folium.LayerControl().add_to(m)
 
-    # --- NEW: Phase legend (replaces company legend) ---
+    # --- NEW: Status legend (replaces company legend) ---
     if show_legend:
         legend_items = ""
-        for phase in phases:
-            color = phase_colors.get(phase, default_color)
+        for Status in Statuss:
+            color = Status_colors.get(Status, default_color)
             legend_items += (
                 f'<div style="display:flex;align-items:center;margin-bottom:4px;">'
                 f'  <span style="display:inline-block;width:12px;height:12px;'
                 f'             background:{color};border:1px solid #333;'
                 f'             margin-right:8px;"></span>'
-                f'  <span style="font-size:12px;">{phase}</span>'
+                f'  <span style="font-size:12px;">{Status}</span>'
                 f'</div>'
             )
 
@@ -125,7 +125,7 @@ def generate_map(df, use_clusters, show_legend):
             color: #000;
             font-size: 14px;
         ">
-            <div style="font-weight:600;margin-bottom:6px;">Phase Legend</div>
+            <div style="font-weight:600;margin-bottom:6px;">Status Legend</div>
             {legend_items}
         </div>
         """
