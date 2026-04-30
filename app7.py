@@ -52,7 +52,14 @@ def generate_map(df, use_clusters, show_legend):
     # Map center (unchanged)
     center_lat = df['latitude'].dropna().mean() if not df['latitude'].dropna().empty else 39.8283
     center_lon = df['longitude'].dropna().mean() if not df['longitude'].dropna().empty else -98.5795
-    m = folium.Map(location=[center_lat, center_lon], zoom_start=5)
+    # m = folium.Map(location=[center_lat, center_lon], zoom_start=5)
+    
+    m = folium.Map(
+        location=[center_lat, center_lon],
+        zoom_start=5,
+        tiles="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+        attr="© OpenStreetMap contributors © CARTO"
+    )
 
     # Only plot rows with coordinates (unchanged)
     valid_rows = df.dropna(subset=['latitude', 'longitude'])
