@@ -63,7 +63,7 @@ def generate_map(df, use_clusters, show_legend):
     m = folium.Map(
         location=[center_lat, center_lon],
         zoom_start=5,
-        tiles="CartoDB positron"
+        tiles="Esri.WorldGrayCanvas"
     )
 
     # Only plot rows with coordinates (unchanged)
